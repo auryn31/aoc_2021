@@ -16,23 +16,16 @@ fn main() {
 }
 
 fn count_deeper_water(arr: &Vec<i32>) -> i32 {
-    let mut counter = 0;
-    for i in 1..arr.len() {
-        if arr[i-1]<arr[i] {
-            counter+=1;
-        }
-    }
-    return counter;
+    return arr
+        .windows(2)
+        .map(|it| if it[0] < it[1] { 1 } else { 0 })
+        .sum();
 }
 
 fn sliding_window(arr: &Vec<i32>) -> i32 {
-    let mut counter = 0;
-    for i in 1..arr.len()-2 {
-        let window_1 = arr[i-1]+arr[i]+arr[i+1];
-        let window_2 = arr[i]+arr[i+1]+arr[i+2];
-        if window_1<window_2 {
-            counter+=1;
-        }
-    }
-    return counter;
+    let window_sum = arr
+        .windows(3)
+        .map(|it| it.iter().sum())
+        .collect::<Vec<i32>>();
+    return count_deeper_water(&window_sum);
 }
