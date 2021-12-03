@@ -27,10 +27,7 @@ fn part_1(arr: &Vec<Vec<i32>>) -> i32 {
         .fold(vec![0; arr[0].len()], |acc, line| {
             acc.iter()
                 .zip(line.iter())
-                .map(|(a, b)| {
-                    // println!("A: {}, B: {}", a , b);
-                    a + b
-                })
+                .map(|(a, b)| a + b)
                 .collect_vec()
         })
         .iter()
@@ -56,13 +53,14 @@ fn part_1(arr: &Vec<Vec<i32>>) -> i32 {
 fn part_2(arr: &Vec<Vec<i32>>) -> i32 {
     let mut oxygen_vec = arr.clone();
     for i in 0..oxygen_vec[0].len() {
-        let mut oxygen_vec_numbers: Vec<i32> = Vec::new();
-        for i in 0..oxygen_vec[0].len() {
-            oxygen_vec_numbers.push(0);
-            for j in 0..oxygen_vec.len() {
-                oxygen_vec_numbers[i] += oxygen_vec[j][i];
-            }
-        }
+        // count how often a 1 is in each line
+        let oxygen_vec_numbers = oxygen_vec.iter().fold(vec![0; arr[0].len()], |acc, line| {
+            acc.iter()
+                .zip(line.iter())
+                .map(|(a, b)| a + b)
+                .collect_vec()
+        });
+        // filter for the number with more appearance
         oxygen_vec = oxygen_vec
             .iter()
             .filter(|line| {
@@ -81,13 +79,12 @@ fn part_2(arr: &Vec<Vec<i32>>) -> i32 {
 
     let mut co2_vec = arr.clone();
     for i in 0..co2_vec[0].len() {
-        let mut co2_vec_numbers: Vec<i32> = Vec::new();
-        for i in 0..co2_vec[0].len() {
-            co2_vec_numbers.push(0);
-            for j in 0..co2_vec.len() {
-                co2_vec_numbers[i] += co2_vec[j][i];
-            }
-        }
+        let co2_vec_numbers = co2_vec.iter().fold(vec![0; arr[0].len()], |acc, line| {
+            acc.iter()
+                .zip(line.iter())
+                .map(|(a, b)| a + b)
+                .collect_vec()
+        });
         co2_vec = co2_vec
             .iter()
             .filter(|line| {
