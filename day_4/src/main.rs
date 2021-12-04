@@ -1,5 +1,5 @@
 use std::fmt;
-use std::{fs, io::BufRead};
+use std::fs;
 
 use itertools::*;
 fn main() {
@@ -10,10 +10,10 @@ fn main() {
 fn run_for_file(filename: &str) {
     println!("In file {}", filename);
     let arr = parse_file(filename);
-    let position = part_1(arr.0, arr.1);
+    let position = part_1(&arr.0, &arr.1);
     println!("part 1 {}", position);
-    // let position_2 = part_2(arr.0, arr.1);
-    // println!("part 2 {}", position_2);
+    let position_2 = part_2(&arr.0, &arr.1);
+    println!("part 2 {}", position_2);
 }
 
 #[derive(Debug, Clone)]
@@ -64,13 +64,7 @@ fn parse_board(board_raw: &str) -> Board {
 
 fn board_wins(numbers: Vec<i32>, board: &Board) -> bool {
     for row in &board.board {
-        if !row
-            .iter()
-            .filter(|it| numbers.contains(it))
-            .collect::<Vec<&i32>>()
-            .len()
-            == 0
-        {
+        if row.iter().filter(|it| !numbers.contains(it)).count() == 0 {
             return true;
         };
     }
@@ -96,21 +90,12 @@ fn calculate_part_one(numbers: Vec<i32>, winning_number: i32, board: &Board) -> 
         .flat_map(|it| it.clone())
         .filter(|it| !numbers.contains(it))
         .fold(0, |acc, num| acc + num);
-    println!(
-        "Undmarked: {}",
-        board
-            .board
-            .iter()
-            .flat_map(|it| it.clone())
-            .filter(|it| !numbers.contains(it))
-            .join(",")
-    );
     return sum_unmarked * winning_number;
 }
 
-fn part_1(numbers: Vec<i32>, boards: Vec<Board>) -> i32 {
+fn part_1(numbers: &Vec<i32>, boards: &Vec<Board>) -> i32 {
     for i in 0..numbers.len() {
-        for board in &boards {
+        for board in boards {
             if board_wins(numbers[0..i].to_vec(), board) {
                 return calculate_part_one(numbers[0..i].to_vec(), numbers[i - 1], board);
             }
@@ -119,18 +104,10 @@ fn part_1(numbers: Vec<i32>, boards: Vec<Board>) -> i32 {
     return -1;
 }
 
-fn part_2(numbers: Vec<i32>, boards: Vec<Board>) -> i32 {
+fn part_2(numbers: &Vec<i32>, boards: &Vec<Board>) -> i32 {
     let mut boards_copy = boards.to_vec();
     for i in 0..numbers.len() {
         if boards_copy.len() == 1 {
-            println!("winning number: {}", numbers[i - 1]);
-            println!(
-                "Numbers drwan before: {}",
-                numbers[0..i].to_vec().iter().join(",")
-            );
-            println!("winning board: \n{}", boards_copy[0]);
-            println!("leftover boards: {}", boards_copy.len());
-
             return calculate_part_one(
                 numbers[0..i].to_vec(),
                 numbers[i - 1],
@@ -154,7 +131,7 @@ mod tests {
     #[test]
     fn test_example_input_part_one() {
         let arr = parse_file("./exampleInput.txt");
-        assert_eq!(part_1(arr.0, arr.1), 4512);
+        assert_eq!(part_1(&arr.0, &arr.1), 4512);
     }
 
     #[test]
@@ -180,9 +157,9 @@ mod tests {
             &Board {
                 board: vec![
                     vec![1, 1, 1, 1, 1],
-                    vec![2, 2, 2, 2, 2, 2],
+                    vec![2, 2, 2, 2, 2],
                     vec![3, 3, 3, 3, 3],
-                    vec![4, 4, 4, 4],
+                    vec![4, 4, 4, 4, 3],
                 ],
             },
         );
@@ -236,9 +213,9 @@ mod tests {
             &Board {
                 board: vec![
                     vec![1, 6, 3, 6, 4],
-                    vec![2, 46, 23, 2, 6, 623],
-                    vec![5, 6, 23, 6243, 2346],
-                    vec![4, 234, 462, 234],
+                    vec![2, 46, 23, 2, 6],
+                    vec![5, 6, 23, 624, 346],
+                    vec![4, 234, 462, 234, 4],
                 ],
             },
         );
@@ -248,18 +225,18 @@ mod tests {
     #[test]
     fn test_example_input_part_two() {
         let arr = parse_file("./exampleInput.txt");
-        assert_eq!(part_2(arr.0, arr.1), 1923);
+        assert_eq!(part_2(&arr.0, &arr.1), 1924);
     }
 
     #[test]
     fn test_input_part_one() {
         let arr = parse_file("./input.txt");
-        assert_eq!(part_1(arr.0, arr.1), 38594);
+        assert_eq!(part_1(&arr.0, &arr.1), 38594);
     }
 
     #[test]
     fn test_input_part_two() {
         let arr = parse_file("./input.txt");
-        assert_eq!(part_2(arr.0, arr.1), 1981);
+        assert_eq!(part_2(&arr.0, &arr.1), 21184);
     }
 }
