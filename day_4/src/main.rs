@@ -55,9 +55,7 @@ fn parse_board(board_raw: &str) -> Board {
         let line: Vec<i32> = board_line
             .split(" ")
             .filter(|it| !it.is_empty())
-            .map(|it| {
-                it.parse::<i32>().unwrap()
-            })
+            .map(|it| it.parse::<i32>().unwrap())
             .collect();
         board.push(line);
     }
@@ -77,10 +75,10 @@ fn board_wins(numbers: Vec<i32>, board: &Board) -> bool {
         };
     }
 
-    for i in 0..board.board.len() {
+    for i in 0..board.board[0].len() {
         let mut is_winning_column = true;
-        for j in 0..board.board[i].len() {
-            if !numbers.contains(&board.board[i][j]) {
+        for j in 0..board.board.len() {
+            if !numbers.contains(&board.board[j][i]) {
                 is_winning_column = false;
             }
         }
@@ -98,11 +96,15 @@ fn calculate_part_one(numbers: Vec<i32>, winning_number: i32, board: &Board) -> 
         .flat_map(|it| it.clone())
         .filter(|it| !numbers.contains(it))
         .fold(0, |acc, num| acc + num);
-        println!("Undmarked: {}", board
-        .board
-        .iter()
-        .flat_map(|it| it.clone())
-        .filter(|it| !numbers.contains(it)).join(","));
+    println!(
+        "Undmarked: {}",
+        board
+            .board
+            .iter()
+            .flat_map(|it| it.clone())
+            .filter(|it| !numbers.contains(it))
+            .join(",")
+    );
     return sum_unmarked * winning_number;
 }
 
@@ -110,7 +112,7 @@ fn part_1(numbers: Vec<i32>, boards: Vec<Board>) -> i32 {
     for i in 0..numbers.len() {
         for board in &boards {
             if board_wins(numbers[0..i].to_vec(), board) {
-                return calculate_part_one(numbers[0..i].to_vec(), numbers[i-1], board);
+                return calculate_part_one(numbers[0..i].to_vec(), numbers[i - 1], board);
             }
         }
     }
@@ -121,18 +123,25 @@ fn part_2(numbers: Vec<i32>, boards: Vec<Board>) -> i32 {
     let mut boards_copy = boards.to_vec();
     for i in 0..numbers.len() {
         if boards_copy.len() == 1 {
-            println!("winning number: {}", numbers[i-1]);
-            println!("Numbers drwan before: {}", numbers[0..i].to_vec().iter().join(","));
+            println!("winning number: {}", numbers[i - 1]);
+            println!(
+                "Numbers drwan before: {}",
+                numbers[0..i].to_vec().iter().join(",")
+            );
             println!("winning board: \n{}", boards_copy[0]);
             println!("leftover boards: {}", boards_copy.len());
-            
-            return calculate_part_one(numbers[0..i].to_vec(), numbers[i-1], &boards_copy.last().unwrap());
+
+            return calculate_part_one(
+                numbers[0..i].to_vec(),
+                numbers[i - 1],
+                &boards_copy.last().unwrap(),
+            );
         } else {
             boards_copy = boards_copy
-            .iter()
-            .filter(|it| !board_wins(numbers[0..i].to_vec(), it))
-            .map(|it| it.clone())
-            .collect::<Vec<Board>>();
+                .iter()
+                .filter(|it| !board_wins(numbers[0..i].to_vec(), it))
+                .map(|it| it.clone())
+                .collect::<Vec<Board>>();
         }
     }
     return -1;
@@ -142,60 +151,66 @@ fn part_2(numbers: Vec<i32>, boards: Vec<Board>) -> i32 {
 mod tests {
     use super::*;
 
-    // #[test]
-    // fn test_example_input_part_one() {
-    //     let arr = parse_file("./exampleInput.txt");
-    //     assert_eq!(part_1(arr.0, arr.1), 4512);
-    // }
+    #[test]
+    fn test_example_input_part_one() {
+        let arr = parse_file("./exampleInput.txt");
+        assert_eq!(part_1(arr.0, arr.1), 4512);
+    }
 
-    // #[test]
-    // fn test_if_board_wins_on_row() {
-    //     let wins = board_wins(
-    //         vec![1, 2, 3, 4, 5, 5, 6],
-    //         &Board {
-    //             board: vec![
-    //                 vec![1, 2, 3, 4, 5, 5, 6],
-    //                 vec![1, 2, 3, 4, 5, 5, 6],
-    //                 vec![1, 2, 3, 4, 5, 5, 6],
-    //                 vec![1, 2, 3, 4, 5, 5, 6],
-    //             ],
-    //         },
-    //     );
-    //     assert_eq!(wins, true);
-    // }
+    #[test]
+    fn test_if_board_wins_on_row() {
+        let wins = board_wins(
+            vec![1, 2, 3, 4, 5, 5, 6],
+            &Board {
+                board: vec![
+                    vec![1, 2, 3, 4, 5, 5, 6],
+                    vec![1, 2, 3, 4, 5, 5, 6],
+                    vec![1, 2, 3, 4, 5, 5, 6],
+                    vec![1, 2, 3, 4, 5, 5, 6],
+                ],
+            },
+        );
+        assert_eq!(wins, true);
+    }
 
-    // #[test]
-    // fn test_if_board_wins_on_column() {
-    //     let wins = board_wins(
-    //         vec![1, 2, 3, 4],
-    //         &Board {
-    //             board: vec![
-    //                 vec![1, 1, 1, 1, 1],
-    //                 vec![2, 2, 2, 2, 2, 2],
-    //                 vec![3, 3, 3, 3, 3],
-    //                 vec![4, 4, 4, 4],
-    //             ],
-    //         },
-    //     );
-    //     assert_eq!(wins, true);
-    // }
+    #[test]
+    fn test_if_board_wins_on_column() {
+        let wins = board_wins(
+            vec![1, 2, 3, 4],
+            &Board {
+                board: vec![
+                    vec![1, 1, 1, 1, 1],
+                    vec![2, 2, 2, 2, 2, 2],
+                    vec![3, 3, 3, 3, 3],
+                    vec![4, 4, 4, 4],
+                ],
+            },
+        );
+        assert_eq!(wins, true);
+    }
 
-    // #[test]
-    // fn test_if_board_wins_on_column_next() {
-    //     let wins = board_wins(
-    //         vec![17,2,33,86,38,41,4,34,91,61,11,81,3,59,29,71,26,44,54,89,46,9,85,62,23,76,45,24,78,14,58,48,57,40,21,49,7,99,8,56,50,19,53,55,10,94,75,68,6,83,84,88,52,80,73,74,79,36,70,28,37,0,42,98,96,92,27,90,47,20,5,77,69,93,31,30,95,25,63,65,51,72,60,16,12,64,18,13],
-    //         &Board {
-    //             board: vec![
-    //                 vec![3,38,22,72,80],
-    //                 vec![56,48,1,50,60],
-    //                 vec![49,98,67,53,30],
-    //                 vec![79,61,66,9,45],
-    //                 vec![96,24,23,43,78],
-    //             ],
-    //         },
-    //     );
-    //     assert_eq!(wins, true);
-    // }
+    #[test]
+    fn test_if_board_wins_on_column_next() {
+        let wins = board_wins(
+            vec![
+                17, 2, 33, 86, 38, 41, 4, 34, 91, 61, 11, 81, 3, 59, 29, 71, 26, 44, 54, 89, 46, 9,
+                85, 62, 23, 76, 45, 24, 78, 14, 58, 48, 57, 40, 21, 49, 7, 99, 8, 56, 50, 19, 53,
+                55, 10, 94, 75, 68, 6, 83, 84, 88, 52, 80, 73, 74, 79, 36, 70, 28, 37, 0, 42, 98,
+                96, 92, 27, 90, 47, 20, 5, 77, 69, 93, 31, 30, 95, 25, 63, 65, 51, 72, 60, 16, 12,
+                64, 18, 13,
+            ],
+            &Board {
+                board: vec![
+                    vec![3, 38, 22, 72, 80],
+                    vec![56, 48, 1, 50, 60],
+                    vec![49, 98, 67, 53, 30],
+                    vec![79, 61, 66, 9, 45],
+                    vec![96, 24, 23, 43, 78],
+                ],
+            },
+        );
+        assert_eq!(wins, true);
+    }
 
     #[test]
     fn test_if_board_wins_on_column_next_2() {
@@ -203,11 +218,11 @@ mod tests {
             vec![38, 48, 98, 61, 24],
             &Board {
                 board: vec![
-                    vec![3,38,22,72,80],
-                    vec![56,48,1,50,60],
-                    vec![49,98,67,53,30],
-                    vec![79,61,66,9,45],
-                    vec![96,24,23,43,78],
+                    vec![3, 38, 22, 72, 80],
+                    vec![56, 48, 1, 50, 60],
+                    vec![49, 98, 67, 53, 30],
+                    vec![79, 61, 66, 9, 45],
+                    vec![96, 24, 23, 43, 78],
                 ],
             },
         );
