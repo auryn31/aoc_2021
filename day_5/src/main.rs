@@ -23,25 +23,19 @@ fn create_matrix(input: &Vec<((i32, i32), (i32, i32))>) -> Vec<Vec<i32>> {
     return vec![vec![0; x+1]; y+1];
 }
 
+fn create_range(from: i32, to: i32) -> Vec<i32> {
+    if from > to {
+        (to..from+1).rev().collect::<Vec<i32>>()
+    } else if from < to {
+        (from..to+1).collect::<Vec<i32>>()
+    } else {
+        vec![]
+    }
+}
+
 fn create_points_from_line(line:((i32, i32), (i32, i32))) -> Vec<(i32, i32)> {
-    let mut horizontal: Vec<i32> = Vec::new();
-    let mut i = line.0.0;
-    if i != line.1.0 {
-        horizontal.push(i);
-    }
-    while i != line.1.0 {
-        i = if i > line.1.0 {i-1} else {i+1};
-        horizontal.push(i);
-    }
-    let mut vertical: Vec<i32> = Vec::new();
-    let mut i = line.0.1;
-    if i != line.1.1 {
-        vertical.push(i);
-    }
-    while i != line.1.1 {
-        i = if i > line.1.1 {i-1} else {i+1};
-        vertical.push(i);
-    }
+    let mut horizontal = create_range(line.0.0, line.1.0);
+    let mut vertical: Vec<i32> = create_range(line.0.1, line.1.1);
     if vertical.len() == 0 {
         vertical = vec![line.0.1; horizontal.len()]
     }
@@ -200,4 +194,21 @@ mod tests {
         assert_eq!(points[3], (3,9));
     }
 
+    #[test]
+    fn create_range_test() {
+        let range = create_range(3, 5);
+        assert_eq!(range.len(), 3);
+        assert_eq!(range[0], 3);
+        assert_eq!(range[1], 4);
+        assert_eq!(range[2], 5);
+    }
+
+    #[test]
+    fn create_range_test_reverse() {
+        let range = create_range(5, 3);
+        assert_eq!(range.len(), 3);
+        assert_eq!(range[0], 5);
+        assert_eq!(range[1], 4);
+        assert_eq!(range[2], 3);
+    }
 }
