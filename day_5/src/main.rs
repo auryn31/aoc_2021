@@ -24,74 +24,43 @@ fn create_matrix(input: &Vec<((i32, i32), (i32, i32))>) -> Vec<Vec<i32>> {
 }
 
 fn create_points_from_line(line:((i32, i32), (i32, i32))) -> Vec<(i32, i32)> {
-    // let mut lines: Vec<(i32, i32)> = Vec::new();
     let mut horizontal: Vec<i32> = Vec::new();
     let mut i = line.0.0;
-    while i != line.1.0 {
+    if i != line.1.0 {
         horizontal.push(i);
-        i = if i > line.1.0 {i-1} else {i+1}
+    }
+    while i != line.1.0 {
+        i = if i > line.1.0 {i-1} else {i+1};
+        horizontal.push(i);
     }
     let mut vertical: Vec<i32> = Vec::new();
     let mut i = line.0.1;
-    while i != line.1.1 {
+    if i != line.1.1 {
         vertical.push(i);
-        i = if i > line.1.1 {i-1} else {i+1}
+    }
+    while i != line.1.1 {
+        i = if i > line.1.1 {i-1} else {i+1};
+        vertical.push(i);
+    }
+    if vertical.len() == 0 {
+        vertical = vec![line.0.1; horizontal.len()]
+    }
+    if horizontal.len() == 0 {
+        horizontal = vec![line.0.0; vertical.len()]
     }
     let numbers = horizontal.iter()
     .zip(vertical.iter())
     .inspect(|f| println!("{}, {}", f.0, f.1))
     .map(|it| (it.0.to_owned(), it.1.to_owned()))
     .collect::<Vec<(i32, i32)>>();
-
-
     return numbers;
 }
 
 fn fill_matrix(input: ((i32, i32), (i32, i32)), matrix: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
     let mut new_matrix = matrix.to_vec();
-    if input.0.1 == input.1.1 {
-        if input.0.0 < input.1.0 {
-            for i in (input.0.0 as usize)..((input.1.0 + 1) as usize) {
-                new_matrix[input.0.1 as usize][i] = new_matrix[input.0.1 as usize][i] + 1;
-            }
-        } else {
-            for i in (input.1.0 as usize)..((input.0.0 + 1) as usize) {
-                new_matrix[input.0.1 as usize][i] = new_matrix[input.0.1 as usize][i] + 1;
-            }
-        }
-    } else if input.0.0 == input.1.0 {
-        if input.0.1 < input.1.1 {
-            for i in (input.0.1 as usize)..((input.1.1 + 1) as usize) {
-                new_matrix[i][input.0.0 as usize] = new_matrix[i][input.0.0 as usize] + 1;
-            }
-        } else {
-            for i in ((input.1.1) as usize)..((input.0.1 + 1) as usize) {
-                new_matrix[i][input.0.0 as usize] = new_matrix[i][input.0.0 as usize] + 1;
-            }
-        }
-    } else {
-        if input.0.0 < input.1.0 {
-            let mut start = input.0;
-            while start.0 <= input.1.0 {
-                new_matrix[start.1 as usize][start.0 as usize] = new_matrix[start.1 as usize][start.0 as usize] + 1;
-                if input.0.1 < input.1.1 {
-                    start = (start.0 + 1, start.1 + 1);
-                } else {
-                    start = (start.0 + 1, start.1 - 1);
-                }
-            }
-        } else {
-            let mut start = input.0;
-            while start.0 >= input.1.0 {
-                new_matrix[start.1 as usize][start.0 as usize] = new_matrix[start.1 as usize][start.0 as usize] + 1;
-                if input.0.1 > input.1.1 {
-                    start = (start.0 - 1, start.1 - 1);
-                } else {
-                    start = (start.0 - 1, start.1 + 1);
-                }
-            }
-        } 
-
+    let points = create_points_from_line(input);
+    for point in points {
+        new_matrix[point.1 as usize][point.0 as usize] = new_matrix[point.1 as usize][point.0 as usize] + 1
     }
     return new_matrix;
 }
@@ -214,11 +183,21 @@ mod tests {
     #[test]
     fn test_create_points_from_line() {
         let points = create_points_from_line(((8,0), (0,8)));
-        assert_eq!(points.len(), 8);
+        assert_eq!(points.len(), 9);
         assert_eq!(points[0], (8,0));
         assert_eq!(points[1], (7,1));
         assert_eq!(points[2], (6,2));
         assert_eq!(points[3], (5,3));
+    }
+
+    #[test]
+    fn test_create_points_from_line_horizontal() {
+        let points = create_points_from_line(((0,9), (5,9)));
+        assert_eq!(points.len(), 6);
+        assert_eq!(points[0], (0,9));
+        assert_eq!(points[1], (1,9));
+        assert_eq!(points[2], (2,9));
+        assert_eq!(points[3], (3,9));
     }
 
 }
