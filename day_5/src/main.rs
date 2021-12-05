@@ -3,20 +3,8 @@ use std::fs;
 
 use itertools::*;
 fn main() {
-    let filename = "./input.txt";
-    run_for_file(filename);
+    println!("Run cargo test for the results");
 }
-
-fn run_for_file(filename: &str) {
-    println!("In file {}", filename);
-    let arr = parse_file(filename);
-    // let position = part_1(&arr.0, &arr.1);
-    // println!("part 1 {}", position);
-    // let position_2 = part_2(&arr.0, &arr.1);
-    // println!("part 2 {}", position_2);
-}
-
-
 
 fn parse_file(filename: &str) -> Vec<((i32, i32), (i32, i32))> {
     let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
@@ -31,54 +19,12 @@ fn parse_file(filename: &str) -> Vec<((i32, i32), (i32, i32))> {
 }
 
 fn create_matrix(input: &Vec<((i32, i32), (i32, i32))>) -> Vec<Vec<i32>> {
-    let mut x: usize = 0;
-    let mut y: usize = 0;
-    for line in input {
-        if line.0.0 > x as i32 {
-            x = line.0.0 as usize
-        }
-        if line.1.0 > x as i32 {
-            x = line.1.0 as usize
-        }
-
-        if line.0.1 > y as i32 {
-            y = line.0.1 as usize
-        }
-        if line.1.1 > y as i32 {
-            y = line.1.1 as usize
-        }
-    }
+    let x = input.iter().flat_map(|it| vec![it.0.0, it.1.0]).max().unwrap() as usize;
+    let y = input.iter().flat_map(|it| vec![it.0.1, it.1.1]).max().unwrap() as usize;
     return vec![vec![0; x+1]; y+1];
 }
 
 fn fill_matrix(input: ((i32, i32), (i32, i32)), matrix: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
-    let mut new_matrix = matrix.to_vec();
-    if input.0.1 == input.1.1 {
-        if input.0.0 < input.1.0 {
-            for i in (input.0.0 as usize)..((input.1.0 + 1) as usize) {
-                new_matrix[input.0.1 as usize][i] = new_matrix[input.0.1 as usize][i] + 1;
-            }
-        } else {
-            for i in (input.1.0 as usize)..((input.0.0 + 1) as usize) {
-                new_matrix[input.0.1 as usize][i] = new_matrix[input.0.1 as usize][i] + 1;
-            }
-        }
-    }
-    if input.0.0 == input.1.0 {
-        if input.0.1 < input.1.1 {
-            for i in (input.0.1 as usize)..((input.1.1 + 1) as usize) {
-                new_matrix[i][input.0.0 as usize] = new_matrix[i][input.0.0 as usize] + 1;
-            }
-        } else {
-            for i in ((input.1.1) as usize)..((input.0.1 + 1) as usize) {
-                new_matrix[i][input.0.0 as usize] = new_matrix[i][input.0.0 as usize] + 1;
-            }
-        }
-    }
-    return new_matrix;
-}
-
-fn fill_matrix_part_two(input: ((i32, i32), (i32, i32)), matrix: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
     let mut new_matrix = matrix.to_vec();
     if input.0.1 == input.1.1 {
         if input.0.0 < input.1.0 {
@@ -135,7 +81,7 @@ fn fill_matrix_part_two(input: ((i32, i32), (i32, i32)), matrix: Vec<Vec<i32>>) 
 fn fill_complete_matrix_part_two(input: &Vec<((i32, i32), (i32, i32))>, matrix: Vec<Vec<i32>>)-> Vec<Vec<i32>> {
     let mut new_matrix = matrix.to_vec();
     for line in input {
-        new_matrix = fill_matrix_part_two(*line, new_matrix);
+        new_matrix = fill_matrix(*line, new_matrix);
     }
     return new_matrix;
 }
@@ -143,7 +89,9 @@ fn fill_complete_matrix_part_two(input: &Vec<((i32, i32), (i32, i32))>, matrix: 
 fn fill_complete_matrix(input: &Vec<((i32, i32), (i32, i32))>, matrix: Vec<Vec<i32>>)-> Vec<Vec<i32>> {
     let mut new_matrix = matrix.to_vec();
     for line in input {
-        new_matrix = fill_matrix(*line, new_matrix);
+        if line.0.0 == line.1.0 || line.0.1 == line.1.1 {
+            new_matrix = fill_matrix(*line, new_matrix);
+        }
     }
     return new_matrix;
 }
@@ -234,6 +182,15 @@ mod tests {
         let matrix_new = fill_complete_matrix_part_two(&arr, matrix);
         let result = calculate_part_one(matrix_new);
         assert_eq!(result, 18423);
+    }
+
+    #[test]
+    fn calculate_input_file_part_two_for_kay() {
+        let arr = parse_file("./input_kay.txt");
+        let matrix = create_matrix(&arr);
+        let matrix_new = fill_complete_matrix_part_two(&arr, matrix);
+        let result = calculate_part_one(matrix_new);
+        assert_eq!(result, 18864);
     }
 
 }
