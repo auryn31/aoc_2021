@@ -135,7 +135,6 @@ fn fill_matrix_part_two(input: ((i32, i32), (i32, i32)), matrix: Vec<Vec<i32>>) 
 fn fill_complete_matrix_part_two(input: &Vec<((i32, i32), (i32, i32))>, matrix: Vec<Vec<i32>>)-> Vec<Vec<i32>> {
     let mut new_matrix = matrix.to_vec();
     for line in input {
-        // println!("update for line ({},{}) -> ({}, {})", line.0.0, line.0.1, line.1.0, line.1.1);
         new_matrix = fill_matrix_part_two(*line, new_matrix);
     }
     return new_matrix;
@@ -144,7 +143,6 @@ fn fill_complete_matrix_part_two(input: &Vec<((i32, i32), (i32, i32))>, matrix: 
 fn fill_complete_matrix(input: &Vec<((i32, i32), (i32, i32))>, matrix: Vec<Vec<i32>>)-> Vec<Vec<i32>> {
     let mut new_matrix = matrix.to_vec();
     for line in input {
-        // println!("update for line ({},{}) -> ({}, {})", line.0.0, line.0.1, line.1.0, line.1.1);
         new_matrix = fill_matrix(*line, new_matrix);
     }
     return new_matrix;
