@@ -1,4 +1,3 @@
-use std::fmt;
 use std::fs;
 
 use itertools::*;
@@ -24,6 +23,30 @@ fn create_matrix(input: &Vec<((i32, i32), (i32, i32))>) -> Vec<Vec<i32>> {
     return vec![vec![0; x+1]; y+1];
 }
 
+fn create_points_from_line(line:((i32, i32), (i32, i32))) -> Vec<(i32, i32)> {
+    // let mut lines: Vec<(i32, i32)> = Vec::new();
+    let mut horizontal: Vec<i32> = Vec::new();
+    let mut i = line.0.0;
+    while i != line.1.0 {
+        horizontal.push(i);
+        i = if i > line.1.0 {i-1} else {i+1}
+    }
+    let mut vertical: Vec<i32> = Vec::new();
+    let mut i = line.0.1;
+    while i != line.1.1 {
+        vertical.push(i);
+        i = if i > line.1.1 {i-1} else {i+1}
+    }
+    let numbers = horizontal.iter()
+    .zip(vertical.iter())
+    .inspect(|f| println!("{}, {}", f.0, f.1))
+    .map(|it| (it.0.to_owned(), it.1.to_owned()))
+    .collect::<Vec<(i32, i32)>>();
+
+
+    return numbers;
+}
+
 fn fill_matrix(input: ((i32, i32), (i32, i32)), matrix: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
     let mut new_matrix = matrix.to_vec();
     if input.0.1 == input.1.1 {
@@ -36,8 +59,7 @@ fn fill_matrix(input: ((i32, i32), (i32, i32)), matrix: Vec<Vec<i32>>) -> Vec<Ve
                 new_matrix[input.0.1 as usize][i] = new_matrix[input.0.1 as usize][i] + 1;
             }
         }
-    } else
-    if input.0.0 == input.1.0 {
+    } else if input.0.0 == input.1.0 {
         if input.0.1 < input.1.1 {
             for i in (input.0.1 as usize)..((input.1.1 + 1) as usize) {
                 new_matrix[i][input.0.0 as usize] = new_matrix[i][input.0.0 as usize] + 1;
@@ -48,31 +70,27 @@ fn fill_matrix(input: ((i32, i32), (i32, i32)), matrix: Vec<Vec<i32>>) -> Vec<Ve
             }
         }
     } else {
-        if input.0.0 < input.1.0 && input.0.1 < input.1.1 {
+        if input.0.0 < input.1.0 {
             let mut start = input.0;
             while start.0 <= input.1.0 {
                 new_matrix[start.1 as usize][start.0 as usize] = new_matrix[start.1 as usize][start.0 as usize] + 1;
-                start = (start.0 + 1, start.1 + 1);
+                if input.0.1 < input.1.1 {
+                    start = (start.0 + 1, start.1 + 1);
+                } else {
+                    start = (start.0 + 1, start.1 - 1);
+                }
             }
-        } else if input.0.0 > input.1.0 && input.0.1 > input.1.1 {
+        } else {
             let mut start = input.0;
             while start.0 >= input.1.0 {
                 new_matrix[start.1 as usize][start.0 as usize] = new_matrix[start.1 as usize][start.0 as usize] + 1;
-                start = (start.0 - 1, start.1 - 1);
+                if input.0.1 > input.1.1 {
+                    start = (start.0 - 1, start.1 - 1);
+                } else {
+                    start = (start.0 - 1, start.1 + 1);
+                }
             }
-        } else if input.0.0 > input.1.0 && input.0.1 < input.1.1 {
-            let mut start = input.0;
-            while start.0 >= input.1.0 {
-                new_matrix[start.1 as usize][start.0 as usize] = new_matrix[start.1 as usize][start.0 as usize] + 1;
-                start = (start.0 - 1, start.1 + 1);
-            }
-        } else if input.0.0 < input.1.0 && input.0.1 > input.1.1 {
-            let mut start = input.0;
-            while start.0 <= input.1.0 {
-                new_matrix[start.1 as usize][start.0 as usize] = new_matrix[start.1 as usize][start.0 as usize] + 1;
-                start = (start.0 + 1, start.1 - 1);
-            }
-        }
+        } 
 
     }
     return new_matrix;
@@ -191,6 +209,16 @@ mod tests {
         let matrix_new = fill_complete_matrix_part_two(&arr, matrix);
         let result = calculate_part_one(matrix_new);
         assert_eq!(result, 18864);
+    }
+
+    #[test]
+    fn test_create_points_from_line() {
+        let points = create_points_from_line(((8,0), (0,8)));
+        assert_eq!(points.len(), 8);
+        assert_eq!(points[0], (8,0));
+        assert_eq!(points[1], (7,1));
+        assert_eq!(points[2], (6,2));
+        assert_eq!(points[3], (5,3));
     }
 
 }
