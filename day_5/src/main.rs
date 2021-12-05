@@ -56,12 +56,10 @@ fn fill_matrix(input: ((i32, i32), (i32, i32)), matrix: Vec<Vec<i32>>) -> Vec<Ve
     if input.0.1 == input.1.1 {
         if input.0.0 < input.1.0 {
             for i in (input.0.0 as usize)..((input.1.0 + 1) as usize) {
-                // println!("update position ({}, {}) to number {}", i, input.0.1, new_matrix[i][input.0.1 as usize] + 1);
                 new_matrix[input.0.1 as usize][i] = new_matrix[input.0.1 as usize][i] + 1;
             }
         } else {
             for i in (input.1.0 as usize)..((input.0.0 + 1) as usize) {
-                // println!("update position ({}, {}) to number {}", i, input.0.1, new_matrix[i][input.0.1 as usize] + 1);
                 new_matrix[input.0.1 as usize][i] = new_matrix[input.0.1 as usize][i] + 1;
             }
         }
@@ -69,15 +67,76 @@ fn fill_matrix(input: ((i32, i32), (i32, i32)), matrix: Vec<Vec<i32>>) -> Vec<Ve
     if input.0.0 == input.1.0 {
         if input.0.1 < input.1.1 {
             for i in (input.0.1 as usize)..((input.1.1 + 1) as usize) {
-                // println!("update position ({}, {}) to number {}", i, input.0.1, new_matrix[i][input.0.1 as usize] + 1);
                 new_matrix[i][input.0.0 as usize] = new_matrix[i][input.0.0 as usize] + 1;
             }
         } else {
             for i in ((input.1.1) as usize)..((input.0.1 + 1) as usize) {
-                // println!("update position ({}, {}) to number {}", i, input.0.1, new_matrix[i][input.0.1 as usize] + 1);
                 new_matrix[i][input.0.0 as usize] = new_matrix[i][input.0.0 as usize] + 1;
             }
         }
+    }
+    return new_matrix;
+}
+
+fn fill_matrix_part_two(input: ((i32, i32), (i32, i32)), matrix: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
+    let mut new_matrix = matrix.to_vec();
+    if input.0.1 == input.1.1 {
+        if input.0.0 < input.1.0 {
+            for i in (input.0.0 as usize)..((input.1.0 + 1) as usize) {
+                new_matrix[input.0.1 as usize][i] = new_matrix[input.0.1 as usize][i] + 1;
+            }
+        } else {
+            for i in (input.1.0 as usize)..((input.0.0 + 1) as usize) {
+                new_matrix[input.0.1 as usize][i] = new_matrix[input.0.1 as usize][i] + 1;
+            }
+        }
+    } else
+    if input.0.0 == input.1.0 {
+        if input.0.1 < input.1.1 {
+            for i in (input.0.1 as usize)..((input.1.1 + 1) as usize) {
+                new_matrix[i][input.0.0 as usize] = new_matrix[i][input.0.0 as usize] + 1;
+            }
+        } else {
+            for i in ((input.1.1) as usize)..((input.0.1 + 1) as usize) {
+                new_matrix[i][input.0.0 as usize] = new_matrix[i][input.0.0 as usize] + 1;
+            }
+        }
+    } else {
+        if input.0.0 < input.1.0 && input.0.1 < input.1.1 {
+            let mut start = input.0;
+            while start.0 <= input.1.0 {
+                new_matrix[start.1 as usize][start.0 as usize] = new_matrix[start.1 as usize][start.0 as usize] + 1;
+                start = (start.0 + 1, start.1 + 1);
+            }
+        } else if input.0.0 > input.1.0 && input.0.1 > input.1.1 {
+            let mut start = input.0;
+            while start.0 >= input.1.0 {
+                new_matrix[start.1 as usize][start.0 as usize] = new_matrix[start.1 as usize][start.0 as usize] + 1;
+                start = (start.0 - 1, start.1 - 1);
+            }
+        } else if input.0.0 > input.1.0 && input.0.1 < input.1.1 {
+            let mut start = input.0;
+            while start.0 >= input.1.0 {
+                new_matrix[start.1 as usize][start.0 as usize] = new_matrix[start.1 as usize][start.0 as usize] + 1;
+                start = (start.0 - 1, start.1 + 1);
+            }
+        } else if input.0.0 < input.1.0 && input.0.1 > input.1.1 {
+            let mut start = input.0;
+            while start.0 <= input.1.0 {
+                new_matrix[start.1 as usize][start.0 as usize] = new_matrix[start.1 as usize][start.0 as usize] + 1;
+                start = (start.0 + 1, start.1 - 1);
+            }
+        }
+
+    }
+    return new_matrix;
+}
+
+fn fill_complete_matrix_part_two(input: &Vec<((i32, i32), (i32, i32))>, matrix: Vec<Vec<i32>>)-> Vec<Vec<i32>> {
+    let mut new_matrix = matrix.to_vec();
+    for line in input {
+        // println!("update for line ({},{}) -> ({}, {})", line.0.0, line.0.1, line.1.0, line.1.1);
+        new_matrix = fill_matrix_part_two(*line, new_matrix);
     }
     return new_matrix;
 }
@@ -146,7 +205,7 @@ mod tests {
         let arr = parse_file("./exampleInput.txt");
         let matrix = create_matrix(&arr);
         let matrix_new = fill_complete_matrix(&arr, matrix);
-        println!("{}", matrix_new.iter().map(|it| it.iter().join(",")).join("\n"));
+        println!("{}", matrix_new.iter().map(|it| it.iter().map(|it| it.to_string()).map(|it| if it.eq("0") {".".to_string()} else {it}).join(",")).join("\n"));
         let result = calculate_part_one(matrix_new);
         assert_eq!(result, 5);
     }
@@ -158,6 +217,25 @@ mod tests {
         let matrix_new = fill_complete_matrix(&arr, matrix);
         let result = calculate_part_one(matrix_new);
         assert_eq!(result, 5774);
+    }
+
+    #[test]
+    fn calculate_test_file_part_two() {
+        let arr = parse_file("./exampleInput.txt");
+        let matrix = create_matrix(&arr);
+        let matrix_new = fill_complete_matrix_part_two(&arr, matrix);
+        println!("{}", matrix_new.iter().map(|it| it.iter().map(|it| it.to_string()).map(|it| if it.eq("0") {".".to_string()} else {it}).join("")).join("\n"));
+        let result = calculate_part_one(matrix_new);
+        assert_eq!(result, 12);
+    }
+
+    #[test]
+    fn calculate_input_file_part_two() {
+        let arr = parse_file("./input.txt");
+        let matrix = create_matrix(&arr);
+        let matrix_new = fill_complete_matrix_part_two(&arr, matrix);
+        let result = calculate_part_one(matrix_new);
+        assert_eq!(result, 18423);
     }
 
 }
