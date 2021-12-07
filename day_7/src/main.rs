@@ -30,7 +30,7 @@ fn calculate_costs_part_two(crabs: &Vec<i32>, pos: i32) -> i32 {
     crabs
         .iter()
         .map(|it| if it > &pos { it - pos } else { pos - it })
-        .map(|it| (0..it + 1).fold(0, |a, b| a + b))
+        .map(|it| (it * (it + 1)) / 2)
         .fold(0, |acc, num| acc + num)
 }
 
