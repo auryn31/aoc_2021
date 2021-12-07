@@ -19,6 +19,10 @@ fn calculate_position(crabs: &Vec<i32>) -> i32 {
     crabs_to_sort[mid]
 }
 
+fn calculate_position_part_two(crabs: &Vec<i32>) -> i32 {
+    ((crabs.iter().fold(0, |acc, num| acc + num) as f64) / crabs.len() as f64).round() as i32
+}
+
 fn calculate_costs(crabs: &Vec<i32>, pos: i32) -> i32 {
     crabs
         .iter()
@@ -88,7 +92,7 @@ mod tests {
     #[test]
     fn test_calculate_costs_for_test_file_for_part_two() {
         let arr = parse_file("./exampleInput.txt");
-        let pos = calculate_position(&arr);
+        let pos = calculate_position_part_two(&arr);
         let costs = brute_force_part_two(&arr, pos);
         assert_eq!(costs, 168);
     }
@@ -104,7 +108,7 @@ mod tests {
     #[test]
     fn test_calculate_costs_for_file_for_part_two() {
         let arr = parse_file("./input.txt");
-        let pos = calculate_position(&arr);
+        let pos = calculate_position_part_two(&arr);
         let costs = brute_force_part_two(&arr, pos);
         assert_eq!(costs, 92881128);
     }
