@@ -2,6 +2,12 @@ use std::fs;
 
 fn main() {
     let arr = parse_file("./input.txt");
+    let pos_one = calculate_position_one(&arr);
+    let costs_one = calculate_costs(&arr, pos_one);
+    println!("Result part 1: {}", costs_one);
+    let pos_two = calculate_position_two(&arr);
+    let costs_two = brute_force_part_two(&arr, pos_two);
+    println!("Result part 2: {}", costs_two);
 }
 
 fn parse_file(filename: &str) -> Vec<i32> {
@@ -12,14 +18,14 @@ fn parse_file(filename: &str) -> Vec<i32> {
         .collect::<Vec<i32>>()
 }
 
-fn calculate_position(crabs: &Vec<i32>) -> i32 {
+fn calculate_position_one(crabs: &Vec<i32>) -> i32 {
     let mut crabs_to_sort = crabs.to_vec();
     crabs_to_sort.sort();
     let mid = crabs_to_sort.len() / 2;
     crabs_to_sort[mid]
 }
 
-fn calculate_position_part_two(crabs: &Vec<i32>) -> i32 {
+fn calculate_position_two(crabs: &Vec<i32>) -> i32 {
     ((crabs.iter().fold(0, |acc, num| acc + num) as f64) / crabs.len() as f64).round() as i32
 }
 
@@ -77,14 +83,14 @@ mod tests {
     #[test]
     fn test_position_calculation_for_test_file() {
         let arr = parse_file("./exampleInput.txt");
-        let pos = calculate_position(&arr);
+        let pos = calculate_position_one(&arr);
         assert_eq!(pos, 2);
     }
 
     #[test]
     fn test_calculate_costs_for_test_file() {
         let arr = parse_file("./exampleInput.txt");
-        let pos = calculate_position(&arr);
+        let pos = calculate_position_one(&arr);
         let costs = calculate_costs(&arr, pos);
         assert_eq!(costs, 37);
     }
@@ -92,7 +98,7 @@ mod tests {
     #[test]
     fn test_calculate_costs_for_test_file_for_part_two() {
         let arr = parse_file("./exampleInput.txt");
-        let pos = calculate_position_part_two(&arr);
+        let pos = calculate_position_two(&arr);
         let costs = brute_force_part_two(&arr, pos);
         assert_eq!(costs, 168);
     }
@@ -100,7 +106,7 @@ mod tests {
     #[test]
     fn test_calculate_costs_for_file() {
         let arr = parse_file("./input.txt");
-        let pos = calculate_position(&arr);
+        let pos = calculate_position_one(&arr);
         let costs = calculate_costs(&arr, pos);
         assert_eq!(costs, 331067);
     }
@@ -108,7 +114,7 @@ mod tests {
     #[test]
     fn test_calculate_costs_for_file_for_part_two() {
         let arr = parse_file("./input.txt");
-        let pos = calculate_position_part_two(&arr);
+        let pos = calculate_position_two(&arr);
         let costs = brute_force_part_two(&arr, pos);
         assert_eq!(costs, 92881128);
     }
