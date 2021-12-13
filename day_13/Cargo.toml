@@ -7,4 +7,4 @@ authors = ["Auryn Engel <auryn.engel@sap.com>"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-itertools = "0.10"
+itertools = "0.10.1"
