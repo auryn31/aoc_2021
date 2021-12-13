@@ -24,12 +24,12 @@ struct Input {
 
 fn print_matrix(matrix: &Vec<Vec<i32>>) {
     println!(
-        "Matrix:\n{}",
+        "Matrix:\n\n{}\n",
         matrix
             .iter()
             .map(|it| it
                 .iter()
-                .map(|val| if val == &0 { "." } else { "#" })
+                .map(|val| if val == &0 { " " } else { "#" })
                 .join(" "))
             .join("\n")
     );
