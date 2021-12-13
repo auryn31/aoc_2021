@@ -12,7 +12,7 @@ fn main() {
     for instruction in arr.instructions {
         result_2 = fold(&result_2, &instruction);
     }
-    printMatrix(&result_2);
+    print_matrix(&result_2);
 
     println!("Time: {}ms", now.elapsed().as_millis());
 }
@@ -22,7 +22,7 @@ struct Input {
     instructions: Vec<(String, i32)>,
 }
 
-fn printMatrix(matrix: &Vec<Vec<i32>>) {
+fn print_matrix(matrix: &Vec<Vec<i32>>) {
     println!(
         "Matrix:\n{}",
         matrix
@@ -38,7 +38,7 @@ fn printMatrix(matrix: &Vec<Vec<i32>>) {
 fn parse_file(filename: &str) -> Input {
     let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
     let parts: Vec<String> = contents.split("\n\n").map(|it| it.to_owned()).collect();
-    let mut dots: Vec<(i32, i32)> = parts[0]
+    let dots: Vec<(i32, i32)> = parts[0]
         .split("\n")
         .map(|it| {
             it.split(",")
@@ -140,7 +140,7 @@ mod tests {
         for instruction in arr.instructions {
             result = fold(&result, &instruction);
         }
-        printMatrix(&result);
+        print_matrix(&result);
         let sum = sum(&result);
         assert_eq!(sum, 98);
     }
