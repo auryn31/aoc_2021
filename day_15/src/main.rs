@@ -18,12 +18,7 @@ fn main() {
 fn print_matrix(matrix: &Vec<Vec<i32>>) {
     println!(
         "Matrix:\n\n{}\n",
-        matrix
-            .iter()
-            .map(|it| it
-                .iter()
-                .join(" "))
-            .join("\n")
+        matrix.iter().map(|it| it.iter().join(" ")).join("\n")
     );
 }
 
@@ -48,10 +43,10 @@ fn enlarge(matrix: &Vec<Vec<i32>>) -> Vec<Vec<i32>> {
     for i in 0..new_matrix.len() {
         for j in 0..new_matrix[i].len() {
             new_matrix[i][j] =
-                (matrix[i % height][j % width] + (j / width) as i32 + (i / height) as i32);
+                matrix[i % height][j % width] + (j / width) as i32 + (i / height) as i32;
 
-            while new_matrix[i][j] >= 10 {
-                new_matrix[i][j] = new_matrix[i][j] - 9;
+            if new_matrix[i][j] >= 10 {
+                new_matrix[i][j] = new_matrix[i][j] % 10 + 1;
             }
         }
     }
@@ -59,7 +54,7 @@ fn enlarge(matrix: &Vec<Vec<i32>>) -> Vec<Vec<i32>> {
 }
 
 fn find_path(matrix: &Vec<Vec<i32>>) -> i32 {
-    let mut result = i32::MAX;
+    let result;
 
     let multiplier = matrix.len();
 
@@ -94,18 +89,6 @@ fn find_path(matrix: &Vec<Vec<i32>>) -> i32 {
     }
     input_graph.freeze();
     let fast_graph = fast_paths::prepare(&input_graph);
-
-    println!(
-        "Matrix is: {},{}: Multiplier: {}",
-        matrix.len(),
-        matrix[0].len(),
-        multiplier
-    );
-    println!(
-        "Search for: {}",
-        (matrix.len() - 1) * multiplier + matrix[0].len() - 1
-    );
-
     let shortest_path = fast_paths::calc_path(
         &fast_graph,
         0,
@@ -157,11 +140,8 @@ mod tests {
             ]
         );
         assert_eq!(
-            matrix[11],
-            vec![
-                2, 4, 9, 2, 4, 8, 4, 7, 8, 3, 3, 5, 1, 3, 5, 9, 5, 8, 9, 4, 4, 6, 2, 4, 6, 1, 6, 9,
-                1, 5, 5, 7, 3, 5, 7, 2, 7, 1, 2, 6, 6, 8, 4, 6, 8, 3, 8, 2, 3, 7
-            ]
+            matrix,
+            parse_file("./exampleInputEnlarged.txt")
         );
         let weight = find_path(&matrix);
         assert_eq!(weight, 315);
@@ -179,6 +159,6 @@ mod tests {
         let arr = parse_file("./input.txt");
         let matrix = enlarge(&arr);
         let weight = find_path(&matrix);
-        assert_eq!(weight, 811);
+        assert_eq!(weight, 3012);
     }
 }
